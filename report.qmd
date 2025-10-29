@@ -8,22 +8,71 @@ format: typst
 ## **Part 0: libraries**
 
 ```{r}
+setwd("c:/Users/light/downloads/ev-power-oscarcheng-1/data")
+
+library(tidyverse)   
+library(dplyr)
+library(readr)
+library(stringr)
+# Read all datasets
+renew_2021 <- read_csv("renew-use-2021.csv")
+renew_2022 <- read_csv("renew-use-2022.csv")
+renew_2023 <- read_csv("renew-use-2023.csv")
+
+energy_price <- read_csv("av-energy-price-2021-2023.csv")
+total_energy_2021 <- read_csv("total-use-2021.csv")
+ev_registrations <- read_csv("ev-registrations-by-state-2023.csv")
 
 ```
 
 ## **Part 1:** **Defining Research Question**
 
-Chosen Question:
+Chosen Question: How much of each state’s total electricity comes from renewable sources between 2021–2023?
 
 ## **Part 2: Data Preparation and Cleaning**
 
 ```{r}
+
+# Clean column names manually
+names(renew_2021) <- tolower(names(renew_2021))
+names(renew_2021) <- str_replace_all(names(renew_2021), " ", "_")
+names(renew_2021) <- str_replace_all(names(renew_2021), "%", "percent")
+
+names(renew_2022) <- tolower(names(renew_2022))
+names(renew_2022) <- str_replace_all(names(renew_2022), " ", "_")
+names(renew_2022) <- str_replace_all(names(renew_2022), "%", "percent")
+
+names(renew_2023) <- tolower(names(renew_2023))
+names(renew_2023) <- str_replace_all(names(renew_2023), " ", "_")
+names(renew_2023) <- str_replace_all(names(renew_2023), "%", "percent")
 
 ```
 
 ## **Part 3: Joining / Pivoting Datasets for Analysis**
 
 ```{r}
+library(tidyverse)
+setwd("c:/Users/light/downloads/ev-power-oscarcheng-1/data")
+# Read & clean column names
+# Read and clean each dataset
+renew_2021 <- read_csv("renew-use-2021.csv") |>
+  rename(state = State, energy_source = Energy_Source, renewable_use = Renewable_Use_2021) |>
+  mutate(year = 2021)
+
+renew_2022 <- read_csv("renew-use-2022.csv") |>
+  rename(state = State, energy_source = Energy_Source, renewable_use = Renewable_Use_2022) |>
+  mutate(year = 2022)
+
+renew_2023 <- read_csv("renew-use-2023.csv") |>
+  rename(state = State, energy_source = Energy_Source, renewable_use = Renewable_Use_2023) |>
+  mutate(year = 2023)
+
+renew_all <- renew_2021 |>
+  full_join(renew_2022, by = names(renew_2021)) |>
+  full_join(renew_2023, by = names(renew_2021))
+
+head(renew_all)
+
 
 ```
 
